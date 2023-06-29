@@ -83,7 +83,7 @@
 
             <div class="formData">
               <label for="quantity">À combien de tournois GameOn avez-vous déjà participé ?</label><br>
-              <input type="number" class="text-control" id="quantity" name="quantity" min="0" max="99">
+              <input type="number" class="text-control" id="quantity" name="quantity">
               <small>Message d'erreur</small>
             </div>
 
@@ -114,10 +114,11 @@
               <label class="checkbox-label" for="location6">
                 <span class="checkbox-icon"></span>
                 Portland</label>
+                <small>Message d'erreur</small>
             </div>
 
             <div class="formData">
-              <input class="checkbox-input" type="checkbox" id="checkbox1" checked />
+              <input class="checkbox-input" type="checkbox" id="checkbox1"/>
               <label class="checkbox2-label" for="checkbox1" required>
                 <span class="checkbox-icon"></span>
                 J'ai lu et accepté les conditions d'utilisation.
@@ -131,9 +132,13 @@
               <br>
             </div>
 
-            <input class="btn-submit" type="submit" class="button" value="C'est parti" />
+            <input class="btn-submit" type="submit" class="button" value="C'est parti"/>
 
           </form>
+          <div id="confirmationMessage" style="display: none;">
+            <p>Merci pour votre inscription !</p>
+            <button id="closeButton">Fermer</button>
+          </div>
         </div>
       </div>
     </div>

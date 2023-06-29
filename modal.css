@@ -4,6 +4,7 @@
   --modal-duration: 0.8s;
   --color-success: #2ecc71;
   --color-error: #e74c3c;
+  --button-bg-color--invalid: grey;
 }
 * {
   box-sizing: border-box;
@@ -233,15 +234,16 @@ input {
   font-size: 12px;
   visibility: hidden;
 }
-.formData.success input{
-  border-color: var(--color-success);
-}
 .formData.error input{
-  border-color: var(--color-error);
+  border: 2px solid var(--color-error);
 }
 .formData.error small{
   color: var(--color-error);
   visibility: visible;
+}
+
+.formData.success input{
+  border: 2px solid var(--color-success);
 }
 /* 
 input[data-error]::after {
@@ -338,6 +340,12 @@ input[data-error]::after {
 }
 .close:after {
   transform: rotate(-45deg);
+}
+.btn-submit:disabled {
+  background-color: var(--button-bg-color--invalid);
+}
+.btn-submit:disabled:hover {
+  cursor: not-allowed;
 }
 .btn-submit,
 .btn-signup {

@@ -10,12 +10,10 @@ function editNav() {
 // DOM Elements
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
-const close = document.querySelector(".close");
-
+const fermer = document.querySelectorAll(".fermer");
 // launch and close modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
-close.addEventListener("click", closeModal);
-
+fermer.forEach((btn) => btn.addEventListener("click", closeModal));
 // launch modal form
 function launchModal() {
   modalbg.style.display = "block";
@@ -27,188 +25,109 @@ function closeModal() {
 }
 
 /**********************************************************************/
-
-//Dom Elements form
 const form = document.getElementById("form");
 const formData = document.querySelectorAll(".formData");
 const textControl = document.querySelectorAll(".text-control");
+const checkbox1 = document.getElementById('checkbox1');
+const btnSubmit = document.querySelector('.btn-submit');
 
-//Events submit form 
 form.addEventListener('submit', e => {
   e.preventDefault();
   formVerify();
 });
 
 function formVerify() {
-  const firstName = textControl[0].value.trim();
-  const lastName = textControl[1].value.trim();
-  const email = textControl[2].value.trim();
-  const birthDate = textControl[3].value.trim();
-  const tournamentNum = textControl[4].value.trim();
+  const validationResults = [];
 
-  // fistName verify
-  if (firstName === "") {
-    let message = "Ce champ ne peut pas être vide";
-    setError(textControl[0], message);
-  }
-  else {
-    let letterNum = firstName.length;
-    if (letterNum < 2) {
-      let message = "Veuillez entrer 2 caractères ou plus pour le champ du nom.";
-      setError(textControl[0], message)
-    } else {
-      setSuccess(textControl[0]);
-    }
-  }
+  validationResults.push(validateInput(textControl[0], "Ce champ ne peut pas être vide", "Veuillez entrer 2 caractères ou plus pour le champ du nom."));
+  validationResults.push(validateInput(textControl[1], "Ce champ ne peut pas être vide", "Veuillez entrer 2 caractères ou plus pour le champ du nom."));
+  validationResults.push(validateInput(textControl[2], "Email ne peut pas être vide", "Email non valide", email_verify));
+  validationResults.push(validateInput(textControl[3], "Vous devez entrez votre date de naissance", "Vous devez avoir minimum 18 ans !", validateBirthdate));
+  validationResults.push(validateInput(textControl[4], "Vous devez entrer un nombre", "Vous devez entrer un nombre entre 0 et 99", validateTournamentNum));
 
-  // lastName verify
-  if (lastName === "") {
-    let message = "Ce champ ne peut pas être vide";
-    setError(textControl[1], message);
-  }
-  else {
-    let letterNum = lastName.length;
-    if (letterNum < 2) {
-      let message = "Veuillez entrer 2 caractères ou plus pour le champ du nom.";
-      setError(textControl[1], message)
-    } else {
-      setSuccess(textControl[1]);
-    }
-  }
-  // email verify
-  if (email === "") {
-    let message = "Email ne peut pas être vide";
-    setError(textControl[2], message);
-  } else if (!email_verify(email)) {
-    let message = "Email non valide";
-    setError(textControl[2], message);
-  } else {
-    setSuccess(textControl[2])
-  }
+  const locationSelection = validateSelection(formData[5]);
+  validationResults.push(locationSelection);
 
-  // Birthdate verify
-  if (birthDate === "") {
-    let message = "Vous devez entrez votre date de naissance";
-    setError(textControl[3], message);
-  } else if (!validateBirthdate(birthDate)) {
-    let message = "Vous devez avoir minimum 18 ans !"
-    setError(textControl[3], message);
-  } else {
-    setSuccess(textControl[3]);
-  }
+  // Vérifier si toutes les entrées sont valides (true)
+  const isValid = validationResults.every(result => result === true);
 
-  // Tournament Number verify
-  if (tournamentNum === "") {
-    let message = "Vous devez entrer un nombre";
-    setError(textControl[4], message);
-  }
-  else if (tournamentNum >= 100 || tournamentNum < 0) {
-    let message = "Vous devez entrer un nombre entre 0 et 99";
-    setError(textControl[4], message);
-  }
-  // il manque une condition pour pas rentrer des nombres à virgules
-  else {
-    setSuccess(textControl[4]);
-  }
-
-  // Participation au tournoi
-  const locationSelection = validateSelection();
-  if (!locationSelection) {
-    let message = "Vous devez choisir une option.";
-    formData[5].setAttribute('data-error', message);
-    formData[5].setAttribute('data-error-visible', 'true');
-  }
-  else {
-    formData[5].removeAttribute('data-error');
-    formData[5].removeAttribute('data-error-visible');
+  if (isValid) {
+    ConfirmationMessage();
   }
 }
 
-// Fonction error
-function setError(elem, message) {
-  const formControl = elem.parentElement;
+function validateInput(input, emptyMessage, invalidMessage, validationFunction = null) {
+  const value = input.value.trim();
+  const formControl = input.parentElement;
   const small = formControl.querySelector('small');
 
-  // Ajout du message d'erreur
-  small.innerText = message;
-
-  // Ajout de la class error
-  formControl.className = "formData error";
-}
-
-// Fonction success
-function setSuccess(elem) {
-  const formControl = elem.parentElement;
-  formControl.className = "formData success";
-}
-
-// Fonction verif mail
-function email_verify(elem) {
-  return /^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/.test(elem);
-}
-
-// Fonction de validation
-function validateBirthdate(elem) {
-
-  // Créer une date à partir de la valeur du champ de date de naissance
-  let selectedDate = new Date(elem);
-
-  // Obtenir la date d'aujourd'hui
-  let today = new Date();
-
-  // Calculer la différence en années entre la date d'aujourd'hui et la date sélectionnée
-  let age = today.getFullYear() - selectedDate.getFullYear();
-
-  // Vérifier si l'utilisateur a au moins 18 ans
-  if (age < 18 || (age === 18 && (today.getMonth() < selectedDate.getMonth() || (today.getMonth() === selectedDate.getMonth() && today.getDate() < selectedDate.getDate())))) {
+  if (value === "") {
+    setError(input, small, emptyMessage);
+    return false;
+  } else if (validationFunction && !validationFunction(value)) {
+    setError(input, small, invalidMessage);
     return false;
   } else {
+    setSuccess(formControl);
     return true;
   }
 }
 
-// Fonction pour valider le choix de ville.
-function validateSelection() {
-  let radioElements = document.querySelectorAll('.formData input[type="radio"]');
+function setError(input, small, message) {
+  small.innerText = message;
+  input.parentElement.className = "formData error";
+}
 
-  // Parcourir les éléments radio et vérifier s'il y en a au moins un de coché  
+function setSuccess(formControl) {
+  formControl.className = "formData success";
+}
+
+function email_verify(email) {
+  return /^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/.test(email);
+}
+
+function validateBirthdate(birthDate) {
+  const selectedDate = new Date(birthDate);
+  const today = new Date();
+  const age = today.getFullYear() - selectedDate.getFullYear();
+
+  return age >= 18 ||
+    (age === 18 && (
+      today.getMonth() > selectedDate.getMonth() ||
+      (today.getMonth() === selectedDate.getMonth() && today.getDate() >= selectedDate.getDate())
+    ));
+}
+
+function validateTournamentNum(tournamentNum) {
+  return tournamentNum !== "" && Number.isInteger(Number(tournamentNum)) && tournamentNum >= 0 && tournamentNum < 100  ;
+}
+
+function validateSelection(formData) {
+  const radioElements = formData.querySelectorAll('input[type="radio"]');
+
   for (let i = 0; i < radioElements.length; i++) {
     if (radioElements[i].checked) {
-      // Au moins un élément radio est sélectionné
+      formData.removeAttribute('data-error');
+      formData.removeAttribute('data-error-visible');
       return true;
     }
   }
-
-  // Aucun élément radio n'est sélectionné
+  const message = "Vous devez choisir une option.";
+  formData.setAttribute('data-error', message);
+  formData.setAttribute('data-error-visible', 'true');
   return false;
 }
 
-// coche checked verify
-// Sélectionner les éléments nécessaires
-let checkbox1 = document.getElementById('checkbox1');
-let btnSubmit = document.querySelector('.btn-submit');
 btnSubmit.disabled = true;
-
-// Ajouter un écouteur d'événements sur le premier bouton
 checkbox1.addEventListener('change', function () {
-  // Vérifier si le premier bouton est coché
-  if (checkbox1.checked) {
-    // Activer le bouton "C'est parti"
-    btnSubmit.disabled = false;
-  } else {
-    // Désactiver le bouton "C'est parti"
-    btnSubmit.disabled = true;
-  }
+  btnSubmit.disabled = !checkbox1.checked;
 });
 
-/*
-function setError(elem, message) {
-  elem.dataset.error = message; // Définit la valeur de l'attribut data-error sur l'élément input
-  
-  if (message) {
-    elem.dataset.errorVisible = true; // Définit la valeur de l'attribut data-error-visible sur true
-  } else {
-    delete elem.dataset.errorVisible; // Supprime l'attribut data-error-visible s'il n'y a pas d'erreur
-  }
+/**************************************************************************************************/
+const modalBody = document.querySelector(".modal-body");
+const confirmation = document.querySelector(".confirmationMessage");
+
+function ConfirmationMessage() {
+  modalBody.style.display = "none";
+  confirmation.style.display = "block";
 }
-*/

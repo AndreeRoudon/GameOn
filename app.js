@@ -73,8 +73,8 @@ function validateSelection(formData) {
       return;
     }
   }
-
   const message = "Vous devez choisir une option.";
+  errorSmall.innerText = message;
   formData.setAttribute('data-error', message);
   formData.setAttribute('data-error-visible', 'true');
 }

@@ -175,6 +175,7 @@ main {
   margin: 5% auto;
   width: 100%;
   max-width: 500px;
+  min-height: 900px;
   animation-name: modalopen;
   animation-duration: var(--modal-duration);
   background: #232323;
@@ -316,6 +317,38 @@ input[data-error]::after {
   left: 21%;
   top: 19%;
 }
+
+.confirmationMessage{
+  display: none;
+}
+.confirmationMessage p{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 52px;
+  max-width: 250px;
+  text-align: center;
+}
+.confirmationMessage .fermer{
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 40px;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: #FE142F;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+}
+
 .close {
   position: absolute;
   right: 15px;

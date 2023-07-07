@@ -33,27 +33,31 @@ const btnSubmit = document.querySelector('.btn-submit');
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-  formVerify();
+  if (formVerify()) {
+    ConfirmationMessage();
+  }
 });
 
 function formVerify() {
-  const validationResults = [];
+  const validationFunctions = [
+    { input: textControl[0], emptyMessage: "Ce champ ne peut pas être vide", invalidMessage: "Veuillez entrer seulement des consonnes ou des voyelles", validationFunction: validateIdentifier },
+    { input: textControl[1], emptyMessage: "Ce champ ne peut pas être vide", invalidMessage: "Veuillez entrer seulement des consonnes ou des voyelles", validationFunction: validateIdentifier },
+    { input: textControl[2], emptyMessage: "Email ne peut pas être vide", invalidMessage: "Email non valide", validationFunction: email_verify },
+    { input: textControl[3], emptyMessage: "Vous devez entrez votre date de naissance", invalidMessage: "Vous devez avoir minimum 18 ans !", validationFunction: validateBirthdate },
+    { input: textControl[4], emptyMessage: "Vous devez entrer un nombre", invalidMessage: "Vous devez entrer un nombre entre 0 et 99", validationFunction: validateTournamentNum }
+  ];
 
-  validationResults.push(validateInput(textControl[0], "Ce champ ne peut pas être vide", "Veuillez entrer 2 caractères ou plus pour le champ du nom."));
-  validationResults.push(validateInput(textControl[1], "Ce champ ne peut pas être vide", "Veuillez entrer 2 caractères ou plus pour le champ du nom."));
-  validationResults.push(validateInput(textControl[2], "Email ne peut pas être vide", "Email non valide", email_verify));
-  validationResults.push(validateInput(textControl[3], "Vous devez entrez votre date de naissance", "Vous devez avoir minimum 18 ans !", validateBirthdate));
-  validationResults.push(validateInput(textControl[4], "Vous devez entrer un nombre", "Vous devez entrer un nombre entre 0 et 99", validateTournamentNum));
+  const validationResults = validationFunctions.map(validationData => {
+    const { input, emptyMessage, invalidMessage, validationFunction } = validationData;
+    return validateInput(input, emptyMessage, invalidMessage, validationFunction);
+  });
 
   const locationSelection = validateSelection(formData[5]);
   validationResults.push(locationSelection);
 
-  // Vérifier si toutes les entrées sont valides (true)
   const isValid = validationResults.every(result => result === true);
 
-  if (isValid) {
-    ConfirmationMessage();
-  }
+  return isValid;
 }
 
 function validateInput(input, emptyMessage, invalidMessage, validationFunction = null) {
@@ -80,6 +84,11 @@ function setError(input, small, message) {
 
 function setSuccess(formControl) {
   formControl.className = "formData success";
+}
+
+function validateIdentifier(value) {
+  const regex = /^[a-zA-Z]+$/;
+  return regex.test(value);
 }
 
 function email_verify(email) {
